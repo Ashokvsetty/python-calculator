@@ -13,12 +13,6 @@ on:
         required: false
         default: 'latest'
 
-# Add permissions for container builds
-permissions:
-  contents: read
-  packages: write
-  actions: read
-
 env:
   DOCKER_HUB_REPO: ashokvsetty/docker-repo
   IMAGE_NAME: calculator
@@ -91,18 +85,19 @@ jobs:
         
     - name: 📊 Image digest
       if: github.event_name != 'pull_request'
-      run: echo "Image digest: ${{ steps.build.outputs.digest }}"
+      run: echo Image digest: ${{ steps.build.outputs.digest }}
       
     - name: 📝 Create release notes
       if: startsWith(github.ref, 'refs/tags/v')
       run: |
+        tag_name="${GITHUB_REF##refs/tags/}"
         echo "## 🐳 Docker Images" >> release_notes.md
         echo "" >> release_notes.md
         echo "### Available Tags:" >> release_notes.md
         echo "\`\`\`" >> release_notes.md
         echo "docker pull ${{ env.DOCKER_HUB_REPO }}:${{ env.IMAGE_NAME }}" >> release_notes.md
         echo "docker pull ${{ env.DOCKER_HUB_REPO }}:latest" >> release_notes.md
-        echo "docker pull ${{ env.DOCKER_HUB_REPO }}:${GITHUB_REF#refs/tags/}" >> release_notes.md
+        echo "docker pull ${{ env.DOCKER_HUB_REPO }}:$tag_name" >> release_notes.md
         echo "\`\`\`" >> release_notes.md
         echo "" >> release_notes.md
         echo "### Quick Run:" >> release_notes.md
@@ -118,4 +113,3 @@ jobs:
       with:
         name: release-notes
         path: release_notes.md
-
