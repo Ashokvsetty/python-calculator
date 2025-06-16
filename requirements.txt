@@ -1,0 +1,10 @@
+# No external dependencies required - using only Python standard library
+# The web calculator uses built-in modules:
+# - http.server
+# - socketserver
+# - webbrowser
+# - threading
+# - time
+# - urllib.parse
+# - json
+
