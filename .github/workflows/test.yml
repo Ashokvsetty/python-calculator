@@ -99,7 +99,7 @@ jobs:
         fi
         
         # Test specific endpoints
-        if curl -f http://localhost:8000/ | grep -q "Python Calculator"; then
+        if curl -f http://localhost:8000/ | grep -q "Web Calculator"; then
           echo "✅ Calculator page loads correctly"
         else
           echo "❌ Calculator page content test failed"
