@@ -1,0 +1,41 @@
+name: Deploy to GKE
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Docker image tag to deploy (e.g. latest, v1.0.0)'
+        required: true
+        default: 'latest'
+
+env:
+  DOCKER_HUB_REPO: ashokvsetty/docker-repo
+  IMAGE_NAME: calculator
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: ⬇️ Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 🔐 Authenticate to GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: ☸️ Set up kubectl
+      uses: google-github-actions/get-gke-credentials@v2
+      with:
+        project_id: ${{ secrets.GKE_PROJECT }}
+        cluster_name: ${{ secrets.GKE_CLUSTER }}
+        location: ${{ secrets.GKE_REGION }}
+
+    - name: 🚀 Deploy to GKE
+      env:
+        IMAGE_TAG: ${{ github.event.inputs.tag }}
+      run: |
+        echo "Deploying image: $DOCKER_HUB_REPO:$IMAGE_TAG"
+        sed "s|__IMAGE_TAG__|$IMAGE_TAG|g" k8s/calculator-app.yaml | kubectl apply -f -
+        kubectl rollout status deployment/calculator-deployment
