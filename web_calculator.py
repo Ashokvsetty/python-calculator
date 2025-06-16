@@ -119,6 +119,7 @@ class CalculatorHandler(http.server.SimpleHTTPRequestHandler):
 <body>
     <div>
         <h1 class="title">Python Calculator</h1>
+        <p style="text-align: center; color: white; font-size: 0.9em; margin-bottom: 10px;">v1.0.0 - CI/CD Pipeline Test</p>
         <div class="calculator">
             <div class="display" id="display">0</div>
             <div class="buttons">
