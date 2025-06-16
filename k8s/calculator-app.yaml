@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: calculator-container
-        image: ashokvsetty/docker-repo:calculator
+        image: ashokvsetty/docker-repo:main-d837c82
         ports:
         - containerPort: 8000
 ---
