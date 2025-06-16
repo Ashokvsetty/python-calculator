@@ -28,7 +28,7 @@ class CalculatorHandler(http.server.SimpleHTTPRequestHandler):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Calculator</title>
+    <title>Web Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -118,7 +118,7 @@ class CalculatorHandler(http.server.SimpleHTTPRequestHandler):
 </head>
 <body>
     <div>
-        <h1 class="title">Python Calculator</h1>
+        <h1 class="title">Web Calculator</h1>
         <p style="text-align: center; color: white; font-size: 0.9em; margin-bottom: 10px;">v1.0.1 - Security Update (setuptools>=78.1.1)</p>
         <div class="calculator">
             <div class="display" id="display">0</div>
