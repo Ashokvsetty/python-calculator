@@ -13,6 +13,12 @@ on:
         required: false
         default: 'latest'
 
+# Add permissions for container builds
+permissions:
+  contents: read
+  packages: write
+  actions: read
+
 env:
   DOCKER_HUB_REPO: ashokvsetty/docker-repo
   IMAGE_NAME: calculator
