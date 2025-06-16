@@ -8,6 +8,9 @@ WORKDIR /app
 COPY web_calculator.py .
 COPY requirements.txt .
 
+# Upgrade pip and setuptools for security
+RUN pip install --no-cache-dir --upgrade pip setuptools>=78.1.1
+
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
