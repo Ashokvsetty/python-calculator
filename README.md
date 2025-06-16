@@ -13,7 +13,7 @@ A beautiful web-based calculator application built with Python and containerized
 
 ## Quick Start
 
-### Using Docker
+### Using Docker (Local Build)
 
 1. **Build the container image:**
    ```bash
@@ -27,6 +27,22 @@ A beautiful web-based calculator application built with Python and containerized
 
 3. **Access the calculator:**
    Open your browser and go to `http://localhost:8000`
+
+### Using Docker Hub (Pre-built Image)
+
+**Quick start - no build required:**
+```bash
+docker run -p 8000:8000 ashokvsetty/docker-repo:calculator
+```
+Then open `http://localhost:8000`
+
+**For deployment automation:**
+```bash
+# Use the automated script
+./build-and-push.sh
+```
+
+See [DOCKER_GUIDE.md](DOCKER_GUIDE.md) for detailed Docker deployment instructions.
 
 ### Running Locally
 
