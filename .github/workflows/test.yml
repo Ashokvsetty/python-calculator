@@ -1,0 +1,113 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+        
+    steps:
+    - name: 🛒 Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: 📦 Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest requests
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        
+    - name: 🔍 Lint Python code
+      run: |
+        pip install flake8
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        
+    - name: 🧪 Test Python syntax
+      run: |
+        python -m py_compile calculator.py
+        python -m py_compile web_calculator.py
+        
+    - name: 🚀 Test web calculator startup
+      run: |
+        # Start the web calculator in background
+        python web_calculator.py &
+        SERVER_PID=$!
+        
+        # Wait for server to start
+        sleep 3
+        
+        # Test if server is responding
+        if curl -f http://localhost:8000 > /dev/null 2>&1; then
+          echo "✅ Web calculator is running correctly"
+        else
+          echo "❌ Web calculator failed to start"
+          exit 1
+        fi
+        
+        # Clean up
+        kill $SERVER_PID
+        
+  test-docker:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🛒 Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: 🐳 Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: 🔨 Build Docker image
+      run: |
+        docker build -t calculator-test .
+        
+    - name: 🧪 Test Docker container
+      run: |
+        # Run container in background
+        docker run -d --name test-container -p 8000:8000 calculator-test
+        
+        # Wait for container to start
+        sleep 5
+        
+        # Test if application is responding
+        if curl -f http://localhost:8000 > /dev/null 2>&1; then
+          echo "✅ Docker container is running correctly"
+        else
+          echo "❌ Docker container test failed"
+          docker logs test-container
+          exit 1
+        fi
+        
+        # Test specific endpoints
+        if curl -f http://localhost:8000/ | grep -q "Python Calculator"; then
+          echo "✅ Calculator page loads correctly"
+        else
+          echo "❌ Calculator page content test failed"
+          exit 1
+        fi
+        
+        # Clean up
+        docker stop test-container
+        docker rm test-container
+        
+    - name: 📋 Test results
+      if: always()
+      run: |
+        echo "Docker test completed"
+        docker images calculator-test
+

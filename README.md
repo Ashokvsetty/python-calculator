@@ -44,6 +44,20 @@ Then open `http://localhost:8000`
 
 See [DOCKER_GUIDE.md](DOCKER_GUIDE.md) for detailed Docker deployment instructions.
 
+### Using GitHub Actions (Automated CI/CD)
+
+**Automated builds on every commit:**
+- ✅ Automatic Docker builds and pushes to Docker Hub
+- ✅ Multi-platform support (AMD64 + ARM64)
+- ✅ Security scanning and testing
+- ✅ Smart tagging based on branches/releases
+
+**Setup required:**
+1. Add Docker Hub credentials to GitHub Secrets
+2. Push code to trigger automated builds
+
+See [GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md) for complete CI/CD setup instructions.
+
 ### Running Locally
 
 1. **Run the Python script:**
