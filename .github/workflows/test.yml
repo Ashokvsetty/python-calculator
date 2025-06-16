@@ -47,9 +47,9 @@ jobs:
         python -m py_compile calculator.py
         python -m py_compile web_calculator.py
         
-    - name: 🚀 Test web calculator startup
+    - name: 🚀 Test  Online Calculator startup
       run: |
-        # Start the web calculator in background
+        # Start the  Online Calculator in background
         python web_calculator.py &
         SERVER_PID=$!
         
@@ -58,9 +58,9 @@ jobs:
         
         # Test if server is responding
         if curl -f http://localhost:8000 > /dev/null 2>&1; then
-          echo "✅ Web calculator is running correctly"
+          echo "✅  Online Calculator is running correctly"
         else
-          echo "❌ Web calculator failed to start"
+          echo "❌  Online Calculator failed to start"
           exit 1
         fi
         
@@ -99,7 +99,7 @@ jobs:
         fi
         
         # Test specific endpoints
-        if curl -f http://localhost:8000/ | grep -q "Web Calculator"; then
+        if curl -f http://localhost:8000/ | grep -q " Online Calculator"; then
           echo "✅ Calculator page loads correctly"
         else
           echo "❌ Calculator page content test failed"
