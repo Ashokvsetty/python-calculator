@@ -1,0 +1,40 @@
+name: Destroy GKE Resources
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type YES to confirm resource deletion'
+        required: true
+
+env:
+  K8S_MANIFEST_PATH: k8s/calculator-app.yaml
+
+jobs:
+  destroy:
+    if: github.event.inputs.confirm == 'YES'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: ⬇️ Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 🔐 Authenticate to GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: ☸️ Set up kubectl
+      uses: google-github-actions/get-gke-credentials@v2
+      with:
+        project_id: ${{ secrets.GKE_PROJECT }}
+        cluster_name: ${{ secrets.GKE_CLUSTER }}
+        location: ${{ secrets.GKE_REGION }}
+
+    - name: ❌ Delete Kubernetes Resources
+      run: |
+        echo "Deleting resources defined in $K8S_MANIFEST_PATH"
+        kubectl delete -f $K8S_MANIFEST_PATH --ignore-not-found=true
+
+    - name: ✅ Done
+      run: echo "Resources deleted successfully from GKE."
