@@ -1,9 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: calculator-service
+  labels:
+    app: calculator
+spec:
+  selector:
+    app: calculator
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: calculator-deployment
-  labels:
-    app: calculator
 spec:
   replicas: 1
   selector:
@@ -15,20 +27,7 @@ spec:
         app: calculator
     spec:
       containers:
-      - name: calculator-container
-        image: ashokvsetty/docker-repo:main-d837c82
-        ports:
-        - containerPort: 8000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: calculator-service
-spec:
-  type: LoadBalancer
-  selector:
-    app: calculator
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8000
+        - name: calculator
+          image: ashokvsetty/docker-repo:calculator
+          ports:
+            - containerPort: 8000
