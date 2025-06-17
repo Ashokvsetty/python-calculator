@@ -1,10 +1,10 @@
-name: Deploy to GKE
+name: Deploy to GKE with Istio
 
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'Docker image tag to deploy (e.g. latest, v1.0.0)'
+      image_tag:
+        description: 'Docker image tag to deploy'
         required: true
         default: 'latest'
 
@@ -32,10 +32,24 @@ jobs:
         cluster_name: ${{ secrets.GKE_CLUSTER }}
         location: ${{ secrets.GKE_REGION }}
 
-    - name: 🚀 Deploy to GKE
-      env:
-        IMAGE_TAG: ${{ github.event.inputs.tag }}
+    - name: 📝 Set image tag in deployment
       run: |
-        echo "Deploying image: $DOCKER_HUB_REPO:$IMAGE_TAG"
-        sed "s|__IMAGE_TAG__|$IMAGE_TAG|g" k8s/calculator-app.yaml | kubectl apply -f -
+        sed -i "s|\(image: ${{ env.DOCKER_HUB_REPO }}:\).*|\1${{ github.event.inputs.image_tag }}|" k8s/calculator-app.yaml
+
+    - name: 🚀 Deploy app and Istio config
+      run: |
+        kubectl apply -f k8s/calculator-app.yaml
         kubectl rollout status deployment/calculator-deployment
+        kubectl apply -f k8s/calculator-ingress.yaml
+
+    - name: 🌐 Get Istio Ingress IP
+      run: |
+        echo "Waiting for external IP..."
+        for i in {1..20}; do
+          IP=$(kubectl get svc istio-ingressgateway -n istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          if [[ -n "$IP" ]]; then
+            echo "Istio Ingress IP: http://$IP"
+            break
+          fi
+          sleep 10
+        done
